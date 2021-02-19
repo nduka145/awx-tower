@@ -31,11 +31,28 @@
         - docker-engine
       state: absent
 
-  - name: clone docker repo
-    shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-    register: dockerepo
+#  - name: clone docker repo
+#    shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+#    register: dockerepo
 
-  - name: install docker-ce
+
+  - name: install docker-ce1
+    yum:
+      name: http://rpmfind.net/linux/centos/7.9.2009/extras/x86_64/Packages/fuse-overlayfs-0.7.2-6.el7_8.x86_64.rpm
+      state: present
+
+  - name: install docker-ce2
+    yum:
+      name: http://rpmfind.net/linux/centos/7.9.2009/extras/x86_64/Packages/slirp4netns-0.4.3-4.el7_8.x86_64.rpm
+      state: present
+
+  - name: install docker-ce2
+    yum:
+      name: http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.107-1.el7_6.noarch.rpm
+      state: present
+
+
+  - name: install docker-ce-main
     yum:
       name: docker-ce
       state: present
@@ -88,13 +105,11 @@
       name: /usr/local/bin/docker-compose
       mode: 0755
 
-  - name: Create a symbolic link
-    file:
-      src: /usr/local/bin/docker-compose
-      dest: /usr/bin/docker-compose
-      owner: root
-      group: root
-      state: link
+#  - name: Create a symbolic link
+#    file:
+#      src: /usr/local/bin/docker-compose
+#      dest: /usr/bin/docker-compose
+#      state: link
 
   - name: run awx install playbook
     shell: ansible-playbook /opt/awx/installer/install.yml -i /opt/awx/installer/inventory

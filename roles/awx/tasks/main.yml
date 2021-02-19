@@ -35,6 +35,12 @@
 #    shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 #    register: dockerepo
 
+  - name: create repo file
+    copy:
+      src: roles/awx/files/docker-ce.repo
+      dest: /etc/yum.repos.d/docker-ce.repo
+
+
 
   - name: install docker-ce1
     yum:

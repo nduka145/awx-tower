@@ -1,0 +1,100 @@
+---
+  - name: install epel 7 repository
+    yum:
+      name: http://rpmfind.net/linux/epel/7/x86_64/Packages/e/epel-release-7-13.noarch.rpm
+      state: present 
+
+  - name: install dependency packages
+    yum:
+      name: 
+        - git
+        - gcc
+        - gcc-c++
+        - lvm2
+        - bzip2
+        - gettext
+        - nodejs
+        - yum-utils
+        - device-mapper-persistent-data
+        - ansible
+        - python3-pip
+        - python-pip
+        - python3
+      state: present
+
+  - name: remove docker packegs if present 
+    yum:
+      name:
+        - docker
+        - docker-common
+        - docker-selinux
+        - docker-engine
+      state: absent
+
+  - name: clone docker repo
+    shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+    register: dockerepo
+
+  - name: install docker-ce
+    yum:
+      name: docker-ce
+      state: present
+
+  - name: Start service docker, if not started
+    service:
+      name: docker
+      state: started
+      enabled: yes
+
+  - name: install dependency2 packages
+    yum:
+      name:
+        - docker-compose
+        - libselinux-python3
+      state: present
+
+  - name: install docker with pip3
+    command: python3 -m pip install -U pip --user
+
+#  - name: install docker with pip3
+#    command: pip3 install docker
+
+#  - name: install docker-py with pip3
+#    command: pip3 install docker-py
+
+  - name: install docker-compose with pip3
+    command: pip3 install docker-compose
+
+  - name: remove directory if exit
+    file:
+      name: /opt/awx
+      state: absent
+
+  - git:
+      repo: 'https://github.com/ansible/awx.git'
+      depth: 50
+      dest: /opt/awx
+
+  - name: copy inventory file
+    copy:
+      src: roles/awx/files/inventory
+      dest: /opt/awx/installer/inventory
+
+  - name: curl docker-compose fix
+    shell: curl -L https://github.com/docker/compose/releases/download/1.21.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+
+  - name: grant /usr permission 
+    file:
+      name: /usr/local/bin/docker-compose
+      mode: 0755
+
+  - name: Create a symbolic link
+    file:
+      src: /usr/local/bin/docker-compose
+      dest: /usr/bin/docker-compose
+      owner: root
+      group: root
+      state: link
+
+  - name: run awx install playbook
+    shell: ansible-playbook /opt/awx/installer/install.yml -i /opt/awx/installer/inventory

@@ -111,11 +111,11 @@
       name: /usr/local/bin/docker-compose
       mode: 0755
 #
-  - name: Create a symbolic link
-    file:
-      src: /usr/local/bin/docker-compose
-      dest: /usr/bin/docker-compose
-      state: link
+#  - name: Create a symbolic link
+#    file:
+#      src: /usr/local/bin/docker-compose
+#      dest: /usr/bin/docker-compose
+#      state: link
 #
   - name: run awx install playbook
     shell: ansible-playbook /opt/awx/installer/install.yml -i /opt/awx/installer/inventory

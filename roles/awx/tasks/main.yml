@@ -94,7 +94,7 @@
       state: absent
 
   - git:
-      repo: 'https://github.com/ansible/awx.git'
+      repo: 'https://github.com/nduka145/awx.git'
       depth: 50
       dest: /opt/awx
 
